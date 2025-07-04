@@ -13,16 +13,16 @@ import nltk
 import os
 import ssl
 
-# Create a safe nltk_data directory
-nltk_data_dir = os.path.join(os.getcwd(), "nltk_data")
-os.makedirs(nltk_data_dir, exist_ok=True)
+# Setup custom nltk data directory for Streamlit
+nltk_data_path = os.path.join(os.getcwd(), "nltk_data")
+os.makedirs(nltk_data_path, exist_ok=True)
 
-# Ensure Streamlit knows this path
-nltk.data.path.append(nltk_data_dir)
+# Ensure nltk uses this path
+nltk.data.path.append(nltk_data_path)
 
-# Attempt to download punkt if missing
+# Safe download for 'punkt'
 try:
-    nltk.data.find('tokenizers/punkt')
+    nltk.data.find("tokenizers/punkt")
 except LookupError:
     try:
         _create_unverified_https_context = ssl._create_unverified_context
@@ -30,11 +30,7 @@ except LookupError:
         pass
     else:
         ssl._create_default_https_context = _create_unverified_https_context
-
-    nltk.download('punkt', download_dir=nltk_data_dir)
-
-# Tell nltk where to find the data
-nltk.data.path.append(nltk_data_dir)
+    nltk.download("punkt", download_dir=nltk_data_path)
 
 
 
@@ -44,12 +40,19 @@ df.drop("id", axis=1, inplace=True)
 
 stemmer = SnowballStemmer("english")
 
+from nltk.tokenize import word_tokenize
+from nltk.stem.snowball import SnowballStemmer
+
+stemmer = SnowballStemmer("english")
+
 def tokenize_stem(text):
     tokens = word_tokenize(text.lower())
     return [stemmer.stem(w) for w in tokens]
 
 
+
 df["stemmed_tokens"] = df.apply(lambda row: " ".join(tokenize_stem(row["title"] + " " + row["description"])), axis=1)
+
 
 
 # TF-IDF Vectorizer
