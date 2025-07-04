@@ -13,6 +13,9 @@ import nltk
 import os
 import ssl
 
+nltk_data_dir = os.path.join(os.getcwd(), "nltk_data")
+os.makedirs(nltk_data_dir, exist_ok=True)
+
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
@@ -22,7 +25,11 @@ except LookupError:
         pass
     else:
         ssl._create_default_https_context = _create_unverified_https_context
-    nltk.download('punkt')
+    nltk.download('punkt', download_dir=nltk_data_dir)
+
+# Tell nltk where to find the data
+nltk.data.path.append(nltk_data_dir)
+
 
 
 # Load and preprocess data
@@ -33,10 +40,11 @@ stemmer = SnowballStemmer("english")
 
 def tokenize_stem(text):
     tokens = word_tokenize(text.lower())
-    stemmed = [stemmer.stem(w) for w in tokens]
-    return " ".join(stemmed)
+    return [stemmer.stem(w) for w in tokens]
 
-df["stemmed_tokens"] = df.apply(lambda row: tokenize_stem(row["title"] + " " + row["description"]), axis=1)
+
+df["stemmed_tokens"] = df.apply(lambda row: " ".join(tokenize_stem(row["title"] + " " + row["description"])), axis=1)
+
 
 # TF-IDF Vectorizer
 tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize_stem)
