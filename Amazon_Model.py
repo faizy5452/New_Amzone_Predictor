@@ -13,9 +13,14 @@ import nltk
 import os
 import ssl
 
+# Create a safe nltk_data directory
 nltk_data_dir = os.path.join(os.getcwd(), "nltk_data")
 os.makedirs(nltk_data_dir, exist_ok=True)
 
+# Ensure Streamlit knows this path
+nltk.data.path.append(nltk_data_dir)
+
+# Attempt to download punkt if missing
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
@@ -25,6 +30,7 @@ except LookupError:
         pass
     else:
         ssl._create_default_https_context = _create_unverified_https_context
+
     nltk.download('punkt', download_dir=nltk_data_dir)
 
 # Tell nltk where to find the data
