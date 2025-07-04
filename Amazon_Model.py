@@ -53,10 +53,11 @@ def tokenize_stem(text):
     return [stemmer.stem(w) for w in tokens]
 
 # Apply to DataFrame
-df["stemmed_tokens"] = df.apply(
-    lambda row: " ".join(tokenize_stem(row["title"] + " " + row["description"])),
-    axis=1
-)
+import re
+
+def tokenize_stem(text):
+    tokens = re.findall(r'\b\w+\b', text.lower())  # Simple regex tokenizer
+    return [stemmer.stem(w) for w in tokens]
 
 # TF-IDF Vectorizer (works on plain text)
 tfidf_vectorizer = TfidfVectorizer()
