@@ -43,6 +43,16 @@ def tokenize_stem(text):
     return [stemmer.stem(w) for w in tokens]
 
 # Preprocess product text
+# Tokenize & Stem Function
+def tokenize_stem(text):
+    try:
+        tokens = word_tokenize(text.lower())
+    except LookupError:
+        nltk.download('punkt')
+        tokens = word_tokenize(text.lower())
+    return [stemmer.stem(w) for w in tokens]
+
+# Apply to DataFrame
 df["stemmed_tokens"] = df.apply(
     lambda row: " ".join(tokenize_stem(row["title"] + " " + row["description"])),
     axis=1
